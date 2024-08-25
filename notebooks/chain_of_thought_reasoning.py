@@ -1,5 +1,5 @@
 import openai
-from key import get_personal_key
+
 
 # Method Explanation:
 # Chain of Thought (CoT) reasoning is a process where the model is encouraged to break down
@@ -9,22 +9,27 @@ from key import get_personal_key
 # that require sequential reasoning or where the final answer depends on correctly
 # processing a series of intermediate steps.
 
-# Set up your OpenAI API key
-openai.api_key = get_personal_key()
+from transformers import AutoModelForCausalLM, AutoTokenizer
+import torch
 
+# Load the Phi-3.5-mini-instruct model
+model_name = "microsoft/Phi-3.5-mini-instruct"
+tokenizer = AutoTokenizer.from_pretrained(model_name)
+model = AutoModelForCausalLM.from_pretrained(model_name)
+
+
+# Method Explanation:
+# Chain of Thought (CoT) reasoning breaks down complex problems into smaller, manageable steps.
 
 def chain_of_thought_reasoning(task: str) -> str:
     prompt = f"Let's break this problem down step by step to find the solution:\n\nTask: {task}"
-    response = openai.ChatCompletion.create(
-        model='gpt-4.0',
-        messages=[
-            {'role': 'system', 'content': 'You are a helpful assistant.'},
-            {'role': 'user', 'content': prompt}
-        ],
-        max_tokens=150,
-        temperature=0.7,
-    )
-    return response.choices[0].message['content'].strip()
+
+    inputs = tokenizer(prompt, return_tensors="pt")
+    outputs = model.generate(**inputs, max_new_tokens=150)
+    response = tokenizer.decode(outputs[0], skip_special_tokens=True)
+
+    return response
+
 
 # Example task
 task = "If a train leaves at 2 PM traveling 60 mph, and another train leaves at 3 PM traveling 75 mph, when will they meet?"

@@ -1,5 +1,5 @@
 import openai
-from key import get_personal_key
+
 
 
 # Method Explanation:
@@ -10,23 +10,27 @@ from key import get_personal_key
 # can perform commonsense reasoning by requiring them to infer plausible explanations
 # for given situations.
 
+from transformers import AutoModelForCausalLM, AutoTokenizer
+import torch
 
-# Set up your OpenAI API key
-openai.api_key = get_personal_key()
+# Load the Phi-3.5-mini-instruct model
+model_name = "microsoft/Phi-3.5-mini-instruct"
+tokenizer = AutoTokenizer.from_pretrained(model_name)
+model = AutoModelForCausalLM.from_pretrained(model_name)
 
+
+# Method Explanation:
+# Commonsense reasoning enables models to make inferences based on everyday knowledge.
 
 def commonsense_reasoning(scenario: str) -> str:
     prompt = f"Given the following scenario:\n\n{scenario}\n\nWhat is the most plausible explanation or conclusion?"
-    response = openai.ChatCompletion.create(
-        model='gpt-4.0',
-        messages=[
-            {'role': 'system', 'content': 'You are a commonsense reasoner.'},
-            {'role': 'user', 'content': prompt}
-        ],
-        max_tokens=150,
-        temperature=0.7,
-    )
-    return response.choices[0].message['content'].strip()
+
+    inputs = tokenizer(prompt, return_tensors="pt")
+    outputs = model.generate(**inputs, max_new_tokens=150)
+    response = tokenizer.decode(outputs[0], skip_special_tokens=True)
+
+    return response
+
 
 # Example scenario
 scenario = "John left the house with an umbrella even though it wasn't raining."
