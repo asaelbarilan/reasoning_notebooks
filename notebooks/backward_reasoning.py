@@ -1,5 +1,5 @@
 import openai
-from key import get_personal_key
+
 
 # Method Explanation:
 # Backward reasoning, also known as backward chaining, involves starting with a conclusion

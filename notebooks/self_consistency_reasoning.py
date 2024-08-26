@@ -2,10 +2,14 @@ import openai
 import numpy as np
 
 # Method Explanation:
-# Self-consistency reasoning is an approach that improves the robustness of model outputs
-# by generating multiple reasoning paths for the same problem and selecting the most consistent one.
-# This method is particularly useful in tasks where different interpretations or reasoning paths
-# might lead to different conclusions. By averaging across these multiple paths, the model
+# Self-consistency reasoning is an approach that improves the
+# robustness of model outputs
+# by generating multiple reasoning paths for the same
+# problem and selecting the most consistent one.
+# This method is particularly useful in tasks where
+# different interpretations or reasoning paths
+# might lead to different conclusions. By averaging across
+# these multiple paths, the model
 # can arrive at a more reliable and accurate conclusion.
 from transformers import AutoModelForCausalLM, AutoTokenizer
 import torch
